@@ -42,23 +42,30 @@ public class SecurityConfig {
             "/api/v1/catalog/**"
     };
 
+    // HU-002: el autorregistro de proveedor es publico, igual que el de cliente.
+    // Va aparte (con metodo HTTP explicito) porque las demas rutas bajo
+    // /api/v1/providers/** (aprobacion, politica de operacion) SI exigen
+    // autenticacion y rol.
+    private static final String PROVIDER_SELF_REGISTRATION = "/api/v1/providers";
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, JwtDecoder jwtDecoder,
-                                            DatabaseAuthoritiesConverter databaseAuthoritiesConverter,
-                                            CorsConfigurationSource corsConfigurationSource) throws Exception {
+                                           DatabaseAuthoritiesConverter databaseAuthoritiesConverter,
+                                           CorsConfigurationSource corsConfigurationSource) throws Exception {
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(databaseAuthoritiesConverter);
 
         http
-            .csrf(csrf -> csrf.disable())
-            .cors(cors -> cors.configurationSource(corsConfigurationSource))
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeHttpRequests(auth -> auth
-                    .requestMatchers(PUBLIC_ROUTES).permitAll()
-                    .anyRequest().authenticated())
-            .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt
-                    .decoder(jwtDecoder)
-                    .jwtAuthenticationConverter(jwtAuthenticationConverter)));
+                .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, PROVIDER_SELF_REGISTRATION).permitAll()
+                        .requestMatchers(PUBLIC_ROUTES).permitAll()
+                        .anyRequest().authenticated())
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt
+                        .decoder(jwtDecoder)
+                        .jwtAuthenticationConverter(jwtAuthenticationConverter)));
         return http.build();
     }
 
