@@ -1,0 +1,14 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  datasource:
+    hikari:
+      maximum-pool-size: ${DB_POOL_MAX:5}
+      minimum-idle: ${DB_POOL_MIN:1}
+      # Aiven for MySQL en el plan gratuito limita las conexiones concurrentes;
+      # un pool pequeno evita agotarlas con una sola instancia del servicio.
+
+logging:
+  level:
+    root: INFO
