@@ -29,7 +29,7 @@ public class ListUsersUseCase {
     }
 
     public Page<ClientJpaEntity> searchClients(String status, String city, Instant from, Instant to, Pageable pageable) {
-        Specification<ClientJpaEntity> spec = Specification.where(null);
+        Specification<ClientJpaEntity> spec = Specification.where((Specification<ClientJpaEntity>) null);
         if (status != null) {
             spec = spec.and((root, q, cb) -> cb.equal(root.get("status"), status));
         }
@@ -46,7 +46,7 @@ public class ListUsersUseCase {
     }
 
     public Page<ProviderJpaEntity> searchProviders(String status, String category, Pageable pageable) {
-        Specification<ProviderJpaEntity> spec = Specification.where(null);
+        Specification<ProviderJpaEntity> spec = Specification.where((Specification<ProviderJpaEntity>) null);
         if (status != null) {
             spec = spec.and((root, q, cb) -> cb.equal(root.get("status"), status));
         }
