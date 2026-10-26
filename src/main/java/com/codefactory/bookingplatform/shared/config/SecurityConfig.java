@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
@@ -71,7 +72,13 @@ public class SecurityConfig {
 
     @Bean
     public JwtDecoder jwtDecoder(SupabaseProperties supabaseProperties) {
-        return NimbusJwtDecoder.withJwkSetUri(supabaseProperties.getJwksUrl()).build();
+        // Supabase firma sus JWT con ES256 (curva eliptica). El builder de
+        // NimbusJwtDecoder acepta solo RS256 por defecto si no se le dice lo
+        // contrario, por eso un token valido se rechazaba con "Another
+        // algorithm expected".
+        return NimbusJwtDecoder.withJwkSetUri(supabaseProperties.getJwksUrl())
+                .jwsAlgorithm(SignatureAlgorithm.ES256)
+                .build();
     }
 
     @Bean
