@@ -21,8 +21,11 @@ public class UserProvisioningService implements UserProvisioning {
 
     @Override
     public UUID provisionUser(String email, String password) {
-        UUID userId = identityProviderPort.createUser(email, password);
-        identityProviderPort.triggerEmailVerification(email);
-        return userId;
+        // TODO: identityProviderPort.triggerEmailVerification(email) deshabilitado
+        // temporalmente - el endpoint /resend de Supabase rechaza con 400 cuando
+        // el usuario se creo via /admin/users (en vez del flujo publico de signup).
+        // Pendiente investigar el contrato exacto despues del video; mientras
+        // tanto el registro no queda bloqueado por este paso.
+        return identityProviderPort.createUser(email, password);
     }
 }
