@@ -41,10 +41,12 @@ public class GoTrueClient implements IdentityProviderPort {
 
     @Override
     public void triggerEmailVerification(String email) {
+        // /auth/v1/recover es para recuperacion de contrasena, no para
+        // reenviar la confirmacion de registro - ese es /auth/v1/resend.
         webClient.post()
-                .uri("/recover")
+                .uri("/resend")
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(Map.of("email", email, "type", "signup"))
+                .bodyValue(Map.of("type", "signup", "email", email))
                 .retrieve()
                 .toBodilessEntity()
                 .block();
